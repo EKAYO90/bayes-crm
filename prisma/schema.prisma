@@ -1,0 +1,236 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String   @id @default(uuid())
+  name            String
+  email           String   @unique
+  passwordHash    String   @default("")
+  role            String   @default("team_member") // admin, manager, team_member, viewer
+  tier            String   @default("Enabler") // Closer, Hunter, Enabler
+  department      String   @default("Tech") // Leadership, Advisory, Tech
+  title           String   @default("")
+  avatarUrl       String   @default("")
+  isActive        Boolean  @default(true)
+  themePref       String   @default("dark") // dark, light, system
+  notifPrefs      String   @default("{}") // JSON string
+  targetsAssigned String   @default("")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  ownedOpportunities    Opportunity[] @relation("OpportunityOwner")
+  enabledOpportunities  Opportunity[] @relation("OpportunityEnabler")
+  ownedOrganizations    Organization[] @relation("OrgOwner")
+  activities            Activity[]
+  demos                 Demo[]
+  weeklyScores          WeeklyScore[]
+  notifications         Notification[]
+  incentives            Incentive[]
+  auditLogs             AuditLog[]
+  stageChanges          StageHistory[] @relation("StageChanger")
+  uploadedFiles         Attachment[]
+}
+
+model Organization {
+  id                  String   @id @default(uuid())
+  name                String   @unique
+  type                String   // Foundation, MDB, Bilateral, DFI, Commercial Bank, Insurance, Academic, Multilateral, Other
+  sector              String   @default("")
+  serviceLineFit      String   @default("[]") // JSON array
+  relationshipOwnerId String
+  relationshipOwner   User     @relation("OrgOwner", fields: [relationshipOwnerId], references: [id])
+  relationshipStatus  String   @default("Cold") // Cold, Warming, Warm, Active, Champion
+  website             String   @default("")
+  notes               String   @default("")
+  lastTouchpointDate  DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  deletedAt           DateTime?
+
+  contacts      Contact[]
+  opportunities Opportunity[]
+  activities    Activity[]
+}
+
+model Contact {
+  id              String   @id @default(uuid())
+  orgId           String
+  organization    Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  fullName        String
+  title           String   @default("")
+  email           String   @default("")
+  phone           String   @default("")
+  linkedinUrl     String   @default("")
+  isDecisionMaker Boolean  @default(false)
+  notes           String   @default("")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  activities Activity[]
+}
+
+model Opportunity {
+  id                  String   @id @default(uuid())
+  displayId           String   @unique // OPP-YYYYMMDD-XXX
+  name                String
+  organizationId      String
+  organization        Organization @relation(fields: [organizationId], references: [id])
+  serviceLine         String   // Clean Energy Transition, Climate Risk & Adaptation, etc.
+  hasAgentComponent   Boolean  @default(false)
+  estimatedValue      Float    @default(0)
+  probability         Int      @default(10) // 0-100
+  stage               String   @default("Lead Identified")
+  stageEnteredAt      DateTime @default(now())
+  ownerId             String
+  owner               User     @relation("OpportunityOwner", fields: [ownerId], references: [id])
+  enablerId           String?
+  enabler             User?    @relation("OpportunityEnabler", fields: [enablerId], references: [id])
+  sourceChannel       String   @default("Existing Relationship")
+  nextAction          String   @default("")
+  nextActionDate      DateTime?
+  proposalSubmitted   Boolean  @default(false)
+  proposalDate        DateTime?
+  expectedCloseDate   DateTime
+  actualCloseDate     DateTime?
+  winLossReason       String   @default("")
+  notes               String   @default("")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  deletedAt           DateTime?
+
+  stageHistory  StageHistory[]
+  activities    Activity[]
+  incentives    Incentive[]
+  attachments   Attachment[]
+}
+
+model StageHistory {
+  id        String   @id @default(uuid())
+  oppId     String
+  opportunity Opportunity @relation(fields: [oppId], references: [id], onDelete: Cascade)
+  oldStage  String
+  newStage  String
+  userId    String
+  user      User     @relation("StageChanger", fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Activity {
+  id               String   @id @default(uuid())
+  date             DateTime
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  activityType     String
+  organizationId   String?
+  organization     Organization? @relation(fields: [organizationId], references: [id])
+  opportunityId    String?
+  opportunity      Opportunity? @relation(fields: [opportunityId], references: [id])
+  contactId        String?
+  contact          Contact? @relation(fields: [contactId], references: [id])
+  description      String
+  outcome          String   @default("")
+  followUpRequired Boolean  @default(false)
+  followUpDate     DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Demo {
+  id               String   @id @default(uuid())
+  name             String
+  ownerId          String
+  owner            User     @relation(fields: [ownerId], references: [id])
+  status           String   @default("Not Started") // LIVE, BROKEN, In Progress, Not Started
+  lastTestedDate   DateTime
+  url              String   @default("")
+  demoDataCurrent  Boolean  @default(true)
+  videoRecorded    String   @default("No") // Yes — Published, Yes — Draft, No
+  videoUrl         String   @default("")
+  issues           String   @default("")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model WeeklyScore {
+  id                    String   @id @default(uuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id])
+  weekStart             DateTime
+  opportunitiesFlagged  Int      @default(0)
+  outboundContacts      Int      @default(0)
+  clientMeetings        Int      @default(0)
+  proposalsContributed  Float    @default(0)
+  demosRun              Int      @default(0)
+  materialsCreated      Int      @default(0)
+  videosRecorded        Int      @default(0)
+  caseStudiesWritten    Int      @default(0)
+  portalScans           Int      @default(0)
+  totalScore            Float    @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([userId, weekStart])
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        String   // overdue_action, stalled_deal, mid_week_score, friday_scorecard, consecutive_zero, demo_reminder, demo_broken, relationship_decay, deal_won, stage_change, monthly_summary
+  title       String
+  message     String
+  link        String   @default("")
+  read        Boolean  @default(false)
+  deliveredAt DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model Incentive {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  oppId     String?
+  opportunity Opportunity? @relation(fields: [oppId], references: [id])
+  type      String   // referral_bonus, proposal_contribution, demo_conversion, quarterly_mvp, video_bonus
+  amount    Float
+  currency  String   @default("KES")
+  approved  Boolean  @default(false)
+  notes     String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Attachment {
+  id          String   @id @default(uuid())
+  oppId       String
+  opportunity Opportunity @relation(fields: [oppId], references: [id], onDelete: Cascade)
+  uploadedById String
+  uploadedBy   User    @relation(fields: [uploadedById], references: [id])
+  fileName    String
+  fileUrl     String
+  fileSize    Int
+  mimeType    String
+  createdAt   DateTime @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  action     String   // CREATE, UPDATE, DELETE, STAGE_CHANGE, LOGIN, EXPORT
+  entityType String   // opportunities, organizations, contacts, activities, demos, users
+  entityId   String
+  oldValue   String   @default("{}") // JSON
+  newValue   String   @default("{}") // JSON
+  ipAddress  String   @default("")
+  userAgent  String   @default("")
+  createdAt  DateTime @default(now())
+}
