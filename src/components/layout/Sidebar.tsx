@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, GitBranch, Columns3, Building2, Users, Activity, Monitor, FileBarChart, Settings, LogOut, Sun, Moon, Gift } from 'lucide-react';
+import { LayoutDashboard, GitBranch, Columns3, Building2, Users, Activity, MessageSquare, Monitor, FileBarChart, Settings, LogOut, Sun, Moon, Gift } from 'lucide-react';
 import BrandLogo from '@/components/BrandLogo';
 
 const navItems = [
@@ -11,6 +11,7 @@ const navItems = [
   { href: '/organizations', label: 'Organizations', icon: Building2 },
   { href: '/team', label: 'Team', icon: Users },
   { href: '/activities', label: 'Activities', icon: Activity },
+  { href: '/conversations', label: 'Conversations', icon: MessageSquare },
   { href: '/demos', label: 'Demos', icon: Monitor },
   { href: '/incentives', label: 'Incentives', icon: Gift },
   { href: '/reports', label: 'Reports', icon: FileBarChart },

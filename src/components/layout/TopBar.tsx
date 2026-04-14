@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Bell, Plus, Search, Menu } from 'lucide-react';
+import { Bell, Plus, Search, Menu, MessageSquarePlus } from 'lucide-react';
 import Link from 'next/link';
 import BrandLogo from '@/components/BrandLogo';
 
@@ -10,9 +10,10 @@ interface TopBarProps {
   theme: 'light' | 'dark';
   onMenuToggle?: () => void;
   onSearchOpen?: () => void;
+  onLogConversationOpen?: () => void;
 }
 
-export default function TopBar({ title, user, theme, onMenuToggle, onSearchOpen }: TopBarProps) {
+export default function TopBar({ title, user, theme, onMenuToggle, onSearchOpen, onLogConversationOpen }: TopBarProps) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -99,6 +100,17 @@ export default function TopBar({ title, user, theme, onMenuToggle, onSearchOpen 
             </div>
           )}
         </div>
+
+        {user.role !== 'viewer' && (
+          <button
+            onClick={onLogConversationOpen}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:opacity-90"
+            style={{ background: 'rgba(192,57,43,0.12)', color: 'var(--color-brand-primary)', border: '1px solid rgba(192,57,43,0.3)' }}
+          >
+            <MessageSquarePlus size={14} />
+            <span className="hidden sm:inline">Log Conversation</span>
+          </button>
+        )}
 
         {/* New Opportunity */}
         {user.role !== 'viewer' && (

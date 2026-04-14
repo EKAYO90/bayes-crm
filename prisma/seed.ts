@@ -32,6 +32,41 @@ async function main() {
     createdUsers[u.name] = user.id;
   }
 
+  const conversationTargets: Record<string, { weekly: number; quarterly: number }> = {
+    'Evans Kayo': { weekly: 10, quarterly: 130 },
+    'Dennis Nderitu': { weekly: 5, quarterly: 65 },
+    'Wilson Mungai': { weekly: 5, quarterly: 65 },
+    'Joan Wanjiku': { weekly: 5, quarterly: 65 },
+    'Howard Piwang': { weekly: 4, quarterly: 52 },
+    'Leslie Igiraneza': { weekly: 4, quarterly: 52 },
+    'Sharon Nyongesa': { weekly: 2, quarterly: 26 },
+    'Mohammed Gudle': { weekly: 2, quarterly: 26 },
+    'James Kanyiri': { weekly: 1, quarterly: 13 },
+    'Amos Wanene': { weekly: 1, quarterly: 13 },
+    'Felix Kuria': { weekly: 1, quarterly: 13 },
+    'Naima Yusuf': { weekly: 1, quarterly: 13 },
+    'Julian Tanui': { weekly: 1, quarterly: 13 },
+  };
+
+  for (const user of users) {
+    const targets = conversationTargets[user.name];
+    if (!targets) continue;
+    await prisma.weeklyQuota.upsert({
+      where: { userId: createdUsers[user.name] },
+      update: {
+        tier: user.tier,
+        weeklyTarget: targets.weekly,
+        quarterlyTarget: targets.quarterly,
+      },
+      create: {
+        userId: createdUsers[user.name],
+        tier: user.tier,
+        weeklyTarget: targets.weekly,
+        quarterlyTarget: targets.quarterly,
+      },
+    });
+  }
+
   const orgs = [
     { name: 'CIFF', type: 'Foundation', owner: 'Evans Kayo', serviceLineFit: '["Clean Energy Transition","Climate Risk & Adaptation"]' },
     { name: 'FSD Africa', type: 'DFI Programme', owner: 'Evans Kayo', serviceLineFit: '["Investment & Transaction","Data & Digital"]' },

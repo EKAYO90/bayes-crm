@@ -14,7 +14,7 @@ export async function GET() {
         role: true,
         department: true,
         tier: true,
-        avatar: true,
+        avatarUrl: true,
         isActive: true,
       },
     })

@@ -1,13 +1,13 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, GitBranch, Building2, Activity, Settings } from 'lucide-react';
+import { LayoutDashboard, GitBranch, Building2, MessageSquare, Settings } from 'lucide-react';
 
 const items = [
   { href: '/dashboard', label: 'Home', icon: LayoutDashboard },
   { href: '/pipeline', label: 'Pipeline', icon: GitBranch },
   { href: '/organizations', label: 'Orgs', icon: Building2 },
-  { href: '/activities', label: 'Activity', icon: Activity },
+  { href: '/conversations', label: 'Convos', icon: MessageSquare },
   { href: '/settings', label: 'More', icon: Settings },
 ];
 

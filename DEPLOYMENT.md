@@ -111,6 +111,13 @@ NEXTAUTH_URL="https://your-vercel-domain.vercel.app"
 
 > If you add a custom domain later, update this to the custom domain.
 
+#### `CRON_SECRET`
+Required for securing Vercel Cron requests to `/api/conversations/notifications/run`.
+
+```bash
+CRON_SECRET="replace_with_generated_secret"
+```
+
 ### Recommended optional variables
 
 #### `NODE_ENV`

@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Edit2, Save, Cpu, AlertTriangle, Clock, ChevronRight } from 'lucide-react';
 import { FUNNEL_STAGES, STAGE_DEFAULT_PROBABILITY, SERVICE_LINES, SOURCE_CHANNELS } from '@/lib/constants';
+import LogConversationModal from '@/components/conversations/LogConversationModal';
 
 const STAGE_COLORS: Record<string, string> = { 'Lead Identified': '#3498DB', 'Initial Contact': '#2980B9', 'Discovery Meeting': '#8E44AD', 'Proposal Development': '#E67E22', 'Proposal Submitted': '#F39C12', 'Negotiation': '#E74C3C', 'Contract Signed': '#27AE60', 'Lost': '#7F8C8D', 'On Hold': '#95A5A6' };
 const STAGE_MAX: Record<string, number> = { 'Lead Identified': 14, 'Initial Contact': 14, 'Discovery Meeting': 21, 'Proposal Development': 21, 'Proposal Submitted': 30, 'Negotiation': 30, 'On Hold': 60 };
@@ -15,6 +16,7 @@ export default function OpportunityDetailPage() {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<any>({});
   const [saving, setSaving] = useState(false);
+  const [showConversationModal, setShowConversationModal] = useState(false);
   const [users, setUsers] = useState<any[]>([]);
   const [orgs, setOrgs] = useState<any[]>([]);
 
@@ -61,9 +63,14 @@ export default function OpportunityDetailPage() {
             {opp.name} {opp.hasAgentComponent && <Cpu size={16} className="inline ml-1" style={{ color: '#8E44AD' }} />}
           </h2>
         </div>
-        <button onClick={() => editing ? handleSave() : setEditing(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white" style={{ background: editing ? '#27AE60' : '#C0392B' }}>
-          {editing ? <><Save size={14} /> {saving ? 'Saving...' : 'Save'}</> : <><Edit2 size={14} /> Edit</>}
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowConversationModal(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold" style={{ background: 'rgba(192,57,43,0.12)', color: '#C0392B', border: '1px solid rgba(192,57,43,0.35)' }}>
+            Log Conversation
+          </button>
+          <button onClick={() => editing ? handleSave() : setEditing(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white" style={{ background: editing ? '#27AE60' : '#C0392B' }}>
+            {editing ? <><Save size={14} /> {saving ? 'Saving...' : 'Save'}</> : <><Edit2 size={14} /> Edit</>}
+          </button>
+        </div>
       </div>
 
       {/* Stage Progress */}
@@ -180,6 +187,13 @@ export default function OpportunityDetailPage() {
           )}
         </div>
       </div>
+
+      <LogConversationModal
+        isOpen={showConversationModal}
+        onClose={() => setShowConversationModal(false)}
+        defaultOrganizationId={opp.organizationId}
+        defaultOpportunityId={opp.id}
+      />
     </div>
   );
 }

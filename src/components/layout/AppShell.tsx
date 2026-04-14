@@ -5,6 +5,7 @@ import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import MobileNav from './MobileNav';
 import SearchModal from './SearchModal';
+import LogConversationModal from '@/components/conversations/LogConversationModal';
 
 const PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Dashboard',
@@ -14,6 +15,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/organizations': 'Organizations',
   '/team': 'Team',
   '/activities': 'Activities',
+  '/conversations': 'Conversations',
   '/demos': 'Demo Arsenal',
   '/incentives': 'Incentives & Bonuses',
   '/reports': 'Reports & Analytics',
@@ -31,6 +33,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return 'dark';
   });
   const [searchOpen, setSearchOpen] = useState(false);
+  const [logConversationOpen, setLogConversationOpen] = useState(false);
   const [pipelineStats, setPipelineStats] = useState({ active: 0, value: 0, weighted: 0 });
   const router = useRouter();
   const pathname = usePathname();
@@ -83,11 +86,18 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
       <Sidebar user={user} theme={theme} onThemeToggle={toggleTheme} onLogout={handleLogout} pipelineStats={pipelineStats} />
       <div className="lg:ml-[220px] min-h-screen pb-16 lg:pb-0">
-        <TopBar title={title} user={user} theme={theme} onSearchOpen={() => setSearchOpen(true)} />
+        <TopBar
+          title={title}
+          user={user}
+          theme={theme}
+          onSearchOpen={() => setSearchOpen(true)}
+          onLogConversationOpen={() => setLogConversationOpen(true)}
+        />
         <main className="p-4 lg:p-6">{children}</main>
       </div>
       <MobileNav />
       <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+      <LogConversationModal isOpen={logConversationOpen} onClose={() => setLogConversationOpen(false)} />
     </div>
   );
 }

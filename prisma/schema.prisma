@@ -36,6 +36,8 @@ model User {
   auditLogs             AuditLog[]
   stageChanges          StageHistory[] @relation("StageChanger")
   uploadedFiles         Attachment[]
+  conversations         Conversation[]
+  weeklyQuotas          WeeklyQuota[]
 }
 
 model Organization {
@@ -57,6 +59,7 @@ model Organization {
   contacts      Contact[]
   opportunities Opportunity[]
   activities    Activity[]
+  conversations Conversation[]
 }
 
 model Contact {
@@ -110,6 +113,7 @@ model Opportunity {
   activities    Activity[]
   incentives    Incentive[]
   attachments   Attachment[]
+  conversations Conversation[]
 }
 
 model StageHistory {
@@ -178,6 +182,53 @@ model WeeklyScore {
   updatedAt             DateTime @updatedAt
 
   @@unique([userId, weekStart])
+}
+
+model Conversation {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  organizationId   String?
+  organization     Organization? @relation(fields: [organizationId], references: [id])
+  opportunityId    String?
+  opportunity      Opportunity? @relation(fields: [opportunityId], references: [id])
+  conversationDate DateTime
+  conversationType String
+  channel          String   @default("External")
+  counterpartyName String   @default("")
+  counterpartyRole String   @default("")
+  counterpartyEmail String  @default("")
+  summary          String
+  outcome          String   @default("")
+  nextStep         String   @default("")
+  followUpRequired Boolean  @default(false)
+  followUpDate     DateTime?
+  isExternal       Boolean  @default(true)
+  isNewLead        Boolean  @default(false)
+  isDuplicate      Boolean  @default(false)
+  metadata         String   @default("{}")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  deletedAt        DateTime?
+
+  @@index([userId, conversationDate])
+  @@index([conversationDate])
+  @@index([organizationId])
+  @@index([opportunityId])
+  @@index([deletedAt])
+}
+
+model WeeklyQuota {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tier            String
+  weeklyTarget    Int
+  quarterlyTarget Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([tier])
 }
 
 model Notification {
