@@ -1,16 +1,18 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Bell, Plus, Search, Menu, X } from 'lucide-react';
+import { Bell, Plus, Search, Menu } from 'lucide-react';
 import Link from 'next/link';
+import BrandLogo from '@/components/BrandLogo';
 
 interface TopBarProps {
   title: string;
   user: { id: string; name: string; role: string };
+  theme: 'light' | 'dark';
   onMenuToggle?: () => void;
   onSearchOpen?: () => void;
 }
 
-export default function TopBar({ title, user, onMenuToggle, onSearchOpen }: TopBarProps) {
+export default function TopBar({ title, user, theme, onMenuToggle, onSearchOpen }: TopBarProps) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -39,11 +41,14 @@ export default function TopBar({ title, user, onMenuToggle, onSearchOpen }: TopB
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between px-4 lg:px-6 h-14" style={{ background: 'var(--color-card)', borderBottom: '1px solid var(--color-border)' }}>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 min-w-0">
         <button onClick={onMenuToggle} className="lg:hidden p-1.5 rounded-lg" style={{ color: 'var(--color-text-secondary)' }}>
           <Menu size={20} />
         </button>
-        <h1 className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>{title}</h1>
+        <Link href="/dashboard" className="lg:hidden flex-shrink-0">
+          <BrandLogo theme={theme} className="w-[96px] h-auto" />
+        </Link>
+        <h1 className="text-base font-bold truncate" style={{ color: 'var(--color-text-primary)' }}>{title}</h1>
       </div>
       <div className="flex items-center gap-2">
         {/* Search */}

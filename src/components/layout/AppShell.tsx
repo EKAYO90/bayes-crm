@@ -83,7 +83,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
       <Sidebar user={user} theme={theme} onThemeToggle={toggleTheme} onLogout={handleLogout} pipelineStats={pipelineStats} />
       <div className="lg:ml-[220px] min-h-screen pb-16 lg:pb-0">
-        <TopBar title={title} user={user} onSearchOpen={() => setSearchOpen(true)} />
+        <TopBar title={title} user={user} theme={theme} onSearchOpen={() => setSearchOpen(true)} />
         <main className="p-4 lg:p-6">{children}</main>
       </div>
       <MobileNav />

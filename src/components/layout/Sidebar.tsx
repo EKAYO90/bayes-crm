@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, GitBranch, Columns3, Building2, Users, Activity, Monitor, FileBarChart, Settings, LogOut, Sun, Moon, Trophy, Gift } from 'lucide-react';
+import { LayoutDashboard, GitBranch, Columns3, Building2, Users, Activity, Monitor, FileBarChart, Settings, LogOut, Sun, Moon, Gift } from 'lucide-react';
+import BrandLogo from '@/components/BrandLogo';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -18,7 +19,7 @@ const navItems = [
 
 interface SidebarProps {
   user: { name: string; role: string; title: string; themePref: string };
-  theme: string;
+  theme: 'light' | 'dark';
   onThemeToggle: () => void;
   onLogout: () => void;
   pipelineStats?: { active: number; value: number; weighted: number };
@@ -30,14 +31,13 @@ export default function Sidebar({ user, theme, onThemeToggle, onLogout, pipeline
   return (
     <aside className="fixed left-0 top-0 bottom-0 z-40 flex flex-col hidden lg:flex" style={{ width: 220, background: 'var(--color-card)', borderRight: '1px solid var(--color-border)' }}>
       {/* Logo */}
-      <div className="p-4 flex items-center gap-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
-        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'var(--color-brand-primary)' }}>
-          <span className="text-white font-bold text-sm">B</span>
-        </div>
-        <div>
-          <div className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>Bayes CRM</div>
-          <div className="text-[10px]" style={{ color: 'var(--color-text-secondary)' }}>Sales Pipeline</div>
-        </div>
+      <div className="p-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
+        <BrandLogo
+          theme={theme}
+          className="w-full max-w-[150px] h-auto"
+          priority
+        />
+        <div className="text-[10px] mt-1" style={{ color: 'var(--color-text-secondary)' }}>Sales Pipeline</div>
       </div>
 
       {/* Nav */}

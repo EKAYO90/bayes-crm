@@ -1,13 +1,27 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import BrandLogo from '@/components/BrandLogo';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const router = useRouter();
+
+  useEffect(() => {
+    const storedTheme = window.localStorage.getItem('themePref');
+    const initialTheme = storedTheme === 'light' || storedTheme === 'dark'
+      ? storedTheme
+      : window.matchMedia('(prefers-color-scheme: light)').matches
+        ? 'light'
+        : 'dark';
+
+    setTheme(initialTheme);
+    document.documentElement.className = initialTheme === 'light' ? 'light' : '';
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -23,18 +37,22 @@ export default function LoginPage() {
       if (!res.ok) { setError(data.error || 'Login failed'); setLoading(false); return; }
       router.push('/dashboard');
       router.refresh();
-    } catch { setError('Network error'); setLoading(false); }
+    } catch {
+      setError('Network error');
+      setLoading(false);
+    }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--color-bg)' }}>
       <div className="w-full max-w-md p-8 rounded-2xl" style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--color-brand-primary)' }}>
-            <span className="text-2xl font-bold text-white">B</span>
-          </div>
-          <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>Bayes CRM</h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-secondary)' }}>Sales & Pipeline Management System</p>
+        <div className="text-center mb-8 flex flex-col items-center">
+          <BrandLogo
+            theme={theme}
+            className="w-full max-w-[230px] h-auto"
+            priority
+          />
+          <p className="mt-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>Sales & Pipeline Management System</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
