@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { User, Bell, Shield, Database } from 'lucide-react';
+import Link from 'next/link';
+import { User, Bell, Shield, Users } from 'lucide-react';
 
 export default function SettingsPage() {
   const [user, setUser] = useState<any>(null);
@@ -36,6 +37,18 @@ export default function SettingsPage() {
             <t.icon size={14} /> {t.label}
           </button>
         ))}
+      {user.role === 'admin' && (
+        <div className="-mt-1">
+          <Link
+            href="/settings/users"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold"
+            style={{ background: 'rgba(192,57,43,0.12)', color: '#C0392B', border: '1px solid rgba(192,57,43,0.3)' }}
+          >
+            <Users size={14} />
+            Manage Users
+          </Link>
+        </div>
+      )}
       </div>
 
       {tab === 'profile' && (

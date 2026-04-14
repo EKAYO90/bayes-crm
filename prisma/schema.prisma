@@ -38,8 +38,54 @@ model User {
   uploadedFiles         Attachment[]
   conversations         Conversation[]
   weeklyQuotas          WeeklyQuota[]
+
+  profile               Profile?       @relation("LegacyUserProfile")
+  approvedProfiles      Profile[]      @relation("ProfileApprover")
+  rejectedProfiles      Profile[]      @relation("ProfileRejector")
+  invitedProfiles       Profile[]      @relation("ProfileInviter")
 }
 
+model Profile {
+  id              String   @id @default(uuid())
+  authUserId      String   @unique @db.Uuid @map("auth_user_id")
+  email           String   @unique
+  fullName        String   @map("full_name")
+  role            String   @default("team_member")
+  tier            String   @default("Enabler")
+  department      String   @default("Tech")
+  title           String   @default("")
+  targetsAssigned String   @default("") @map("targets_assigned")
+  approvalStatus  String   @default("pending") @map("approval_status") // pending, approved, rejected
+  approvalNotes   String   @default("") @map("approval_notes")
+  isActive        Boolean  @default(true) @map("is_active")
+
+  approvedAt      DateTime? @map("approved_at")
+  rejectedAt      DateTime? @map("rejected_at")
+  lastLoginAt     DateTime? @map("last_login_at")
+
+  legacyUserId    String?  @unique @map("legacy_user_id")
+  legacyUser      User?    @relation("LegacyUserProfile", fields: [legacyUserId], references: [id])
+
+  approvedById    String? @map("approved_by_id")
+  approvedBy      User?    @relation("ProfileApprover", fields: [approvedById], references: [id])
+
+  rejectedById    String? @map("rejected_by_id")
+  rejectedBy      User?    @relation("ProfileRejector", fields: [rejectedById], references: [id])
+
+  invitedById     String? @map("invited_by_id")
+  invitedBy       User?    @relation("ProfileInviter", fields: [invitedById], references: [id])
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([approvalStatus])
+  @@index([isActive])
+  @@index([role])
+  @@index([tier])
+  @@index([email])
+  @@index([legacyUserId])
+  @@map("profiles")
+}
 model Organization {
   id                  String   @id @default(uuid())
   name                String   @unique

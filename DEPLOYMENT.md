@@ -152,6 +152,11 @@ Before first production deployment, add all required env vars:
 - `DATABASE_URL`
 - `JWT_SECRET`
 - `NEXTAUTH_URL`
+- `NEXT_PUBLIC_APP_URL`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `CRON_SECRET`
 - `NODE_ENV=production` (recommended)
 
 Apply for environments:
@@ -223,6 +228,17 @@ You should see:
 
 ```bash
 npx prisma studio
+
+## Step 4.7 Supabase Auth post-migration setup
+
+After database migration is applied:
+
+1. Run SQL policies from `supabase/profiles_rls.sql` in Supabase SQL editor.
+2. Ensure at least one admin profile exists (Evans bootstrap).
+3. Verify invite flow from `/settings/users` sends Supabase invite emails.
+4. Confirm auth callback URL in Supabase Auth settings includes:
+   - `https://<your-domain>/auth/callback`
+
 ```
 
 Open Prisma Studio and confirm tables have records (users, organizations, opportunities, activities).

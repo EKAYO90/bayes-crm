@@ -32,6 +32,38 @@ async function main() {
     createdUsers[u.name] = user.id;
   }
 
+  const evansAuthUserId = process.env.EVANS_SUPABASE_AUTH_USER_ID;
+  if (evansAuthUserId) {
+    await prisma.profile.upsert({
+      where: { authUserId: evansAuthUserId },
+      create: {
+        authUserId: evansAuthUserId,
+        email: 'ekayo@bayesconsulting.com',
+        fullName: 'Evans Kayo',
+        role: 'admin',
+        tier: 'Closer',
+        department: 'Leadership',
+        title: 'Managing Partner & CEO',
+        approvalStatus: 'approved',
+        approvedAt: new Date(),
+        isActive: true,
+        legacyUserId: createdUsers['Evans Kayo'],
+      },
+      update: {
+        email: 'ekayo@bayesconsulting.com',
+        fullName: 'Evans Kayo',
+        role: 'admin',
+        tier: 'Closer',
+        department: 'Leadership',
+        title: 'Managing Partner & CEO',
+        approvalStatus: 'approved',
+        approvedAt: new Date(),
+        isActive: true,
+        legacyUserId: createdUsers['Evans Kayo'],
+      },
+    });
+    console.log('✅ Evans Supabase profile bootstrapped as admin');
+  }
   const conversationTargets: Record<string, { weekly: number; quarterly: number }> = {
     'Evans Kayo': { weekly: 10, quarterly: 130 },
     'Dennis Nderitu': { weekly: 5, quarterly: 65 },

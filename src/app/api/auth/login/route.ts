@@ -28,6 +28,6 @@ export async function POST(req: NextRequest) {
   });
 
   const res = NextResponse.json({ user: session });
-  res.cookies.set('session', token, { httpOnly: true, secure: false, sameSite: 'lax', maxAge: 86400, path: '/' });
+  res.cookies.set('session', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 86400, path: '/' });
   return res;
 }

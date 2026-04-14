@@ -20,6 +20,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/incentives': 'Incentives & Bonuses',
   '/reports': 'Reports & Analytics',
   '/settings': 'Settings',
+  '/settings/users': 'User Management',
   '/notifications': 'Notifications',
 };
 
